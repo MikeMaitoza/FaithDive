@@ -49,11 +49,13 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
-// Start server
-const PORT = config.port;
-app.listen(PORT, () => {
-  console.log(`✅ Faith Dive server running on http://localhost:${PORT}`);
-  console.log(`   Environment: ${config.nodeEnv}`);
-});
+// Start server only when run directly (not when imported for tests)
+if (require.main === module) {
+  const PORT = config.port;
+  app.listen(PORT, () => {
+    console.log(`✅ Faith Dive server running on http://localhost:${PORT}`);
+    console.log(`   Environment: ${config.nodeEnv}`);
+  });
+}
 
 module.exports = app;
