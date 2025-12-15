@@ -3,6 +3,7 @@
 import db from './database.js';
 import bibleSearch from './bibleSearch.js';
 import journal from './journal.js';
+import favorites from './favorites.js';
 import theme from './theme.js';
 
 console.log('Faith Dive App Loading...');
@@ -162,7 +163,7 @@ async function searchByReference() {
           <button class="btn-action" onclick="addToJournal('${escapeHtml(result.reference)}', '${escapeHtml(result.text)}')">
             📖 Add to Journal
           </button>
-          <button class="btn-action" onclick="addToFavorites('${escapeHtml(result.reference)}')">
+          <button class="btn-action" onclick="addToFavorites('${escapeHtml(result.reference)}', '${escapeHtml(result.text)}')">
             ⭐ Add to Favorites
           </button>
         </div>
@@ -206,7 +207,7 @@ async function searchByKeyword() {
             <button class="btn-action" onclick="addToJournal('${escapeHtml(verse.reference)}', '${escapeHtml(verse.text)}')">
               📖 Add to Journal
             </button>
-            <button class="btn-action" onclick="addToFavorites('${escapeHtml(verse.reference)}')">
+            <button class="btn-action" onclick="addToFavorites('${escapeHtml(verse.reference)}', '${escapeHtml(verse.text)}')">
               ⭐ Add to Favorites
             </button>
           </div>
@@ -506,6 +507,68 @@ function loadMorePage() {
   `;
 }
 
+function loadFavoritesPage() {
+  const mainContent = document.getElementById('main-content');
+  const allFavorites = favorites.getAll();
+  const favoriteCount = favorites.getCount();
+
+  mainContent.innerHTML = `
+    <div class="card">
+      <div class="favorites-header">
+        <h2>My Favorites</h2>
+      </div>
+
+      ${favoriteCount === 0 ? `
+        <div class="empty-state">
+          <p>⭐</p>
+          <p>No favorite verses yet.</p>
+          <p class="empty-state-hint">
+            Search for a Bible verse and click "Add to Favorites" to save your first verse.
+          </p>
+        </div>
+      ` : `
+        <div class="favorites-stats">
+          <p class="favorites-count">${favoriteCount} favorite verse${favoriteCount === 1 ? '' : 's'}</p>
+        </div>
+        <div class="favorites-list">
+          ${allFavorites.map(fav => `
+            <div class="favorite-item" data-id="${fav.id}">
+              <div class="favorite-header">
+                <h3 class="favorite-reference">${escapeHtml(fav.reference)}</h3>
+                <span class="favorite-translation">${escapeHtml(favorites.getTranslationDisplayName(fav.translation))}</span>
+              </div>
+              <div class="favorite-verse">${escapeHtml(fav.verse_text)}</div>
+              <div class="favorite-footer">
+                <span class="favorite-date">${favorites.formatDate(fav.created_at)}</span>
+                <button class="btn-action-small btn-delete" onclick="deleteFavoriteEntry(${fav.id})">
+                  🗑️ Remove
+                </button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `}
+    </div>
+  `;
+}
+
+window.deleteFavoriteEntry = function(id) {
+  if (confirm('Are you sure you want to remove this verse from your favorites?')) {
+    try {
+      const result = favorites.delete(id);
+
+      if (result.success) {
+        loadFavoritesPage();
+      } else {
+        alert(`❌ ${result.message}`);
+      }
+    } catch (error) {
+      console.error('Error deleting favorite:', error);
+      alert('❌ Failed to remove from favorites. Please try again.');
+    }
+  }
+};
+
 // Toggle theme
 window.toggleTheme = function() {
   const newTheme = theme.toggle();
@@ -568,9 +631,26 @@ window.importData = function() {
 };
 
 // Add to favorites (global function for onclick)
-window.addToFavorites = function(reference) {
-  // TODO: Implement favorites
-  alert(`Adding "${reference}" to favorites (feature coming soon)`);
+window.addToFavorites = async function(reference, verseText) {
+  try {
+    const translation = await bibleSearch.getPreferredTranslation();
+
+    if (favorites.isFavorite(reference, translation)) {
+      alert('⭐ This verse is already in your favorites!');
+      return;
+    }
+
+    const result = favorites.create(reference, verseText, translation);
+
+    if (result.success) {
+      alert('⭐ Added to favorites!');
+    } else {
+      alert(`❌ ${result.message}`);
+    }
+  } catch (error) {
+    console.error('Error adding to favorites:', error);
+    alert('❌ Failed to add to favorites. Please try again.');
+  }
 };
 
 // Page loading
@@ -585,12 +665,7 @@ function loadPage(pageName) {
       loadJournalPage();
       break;
     case 'favorites':
-      mainContent.innerHTML = `
-        <div class="card">
-          <h2>Favorites</h2>
-          <p>Your favorite verses will appear here...</p>
-        </div>
-      `;
+      loadFavoritesPage();
       break;
     case 'more':
       loadMorePage();
