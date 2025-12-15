@@ -26,6 +26,18 @@ class Database {
         const uint8Array = new Uint8Array(JSON.parse(savedDb));
         this.db = new SQL.Database(uint8Array);
         console.log('📚 Loaded existing database');
+
+        // Migrate favorites table if needed (add verse_text column for existing users)
+        const tableInfo = this.db.exec("PRAGMA table_info(favorites)");
+        if (tableInfo.length > 0) {
+          const columns = tableInfo[0].values.map(row => row[1]);
+          if (!columns.includes('verse_text')) {
+            console.log('📚 Migrating favorites table to add verse_text column...');
+            this.db.run("ALTER TABLE favorites ADD COLUMN verse_text TEXT DEFAULT ''");
+            this.save();
+            console.log('✅ Migration complete');
+          }
+        }
       } else {
         // Create new database
         this.db = new SQL.Database();
@@ -61,8 +73,10 @@ class Database {
       CREATE TABLE IF NOT EXISTS favorites (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         reference TEXT NOT NULL,
+        verse_text TEXT NOT NULL,
         translation TEXT NOT NULL,
-        created_at TEXT NOT NULL
+        created_at TEXT NOT NULL,
+        UNIQUE(reference, translation)
       )
     `);
 
@@ -170,8 +184,8 @@ class Database {
     // Import favorites
     data.favorites.forEach(fav => {
       this.run(
-        'INSERT INTO favorites (reference, translation, created_at) VALUES (?, ?, ?)',
-        [fav.reference, fav.translation, fav.created_at]
+        'INSERT INTO favorites (reference, verse_text, translation, created_at) VALUES (?, ?, ?, ?)',
+        [fav.reference, fav.verse_text || '', fav.translation, fav.created_at]
       );
     });
 
