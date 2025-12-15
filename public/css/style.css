@@ -546,6 +546,25 @@ body {
     font-style: italic;
 }
 
+/* Responsive Design for Mobile */
+@media (max-width: 480px) {
+    .favorite-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .favorite-translation {
+        align-self: flex-start;
+        margin-top: var(--spacing-xs);
+    }
+
+    .favorite-footer {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-xs);
+    }
+}
+
 /* ===== Modal Styles ===== */
 .modal {
     position: fixed;
