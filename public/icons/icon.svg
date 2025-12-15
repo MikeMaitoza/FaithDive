@@ -1,0 +1,19 @@
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="512" height="512" fill="#D4AF37"/>
+
+  <!-- Book shape -->
+  <rect x="128" y="96" width="256" height="320" fill="#F5F5DC" rx="8"/>
+  <rect x="256" y="96" width="2" height="320" fill="#D4AF37"/>
+
+  <!-- Bookmark -->
+  <path d="M 200 96 L 200 200 L 220 180 L 240 200 L 240 96 Z" fill="#C4941F"/>
+
+  <!-- Decorative lines (pages) -->
+  <line x1="160" y1="180" x2="240" y2="180" stroke="#3E2723" stroke-width="2" opacity="0.3"/>
+  <line x1="272" y1="180" x2="352" y2="180" stroke="#3E2723" stroke-width="2" opacity="0.3"/>
+  <line x1="160" y1="220" x2="240" y2="220" stroke="#3E2723" stroke-width="2" opacity="0.3"/>
+  <line x1="272" y1="220" x2="352" y2="220" stroke="#3E2723" stroke-width="2" opacity="0.3"/>
+  <line x1="160" y1="260" x2="240" y2="260" stroke="#3E2723" stroke-width="2" opacity="0.3"/>
+  <line x1="272" y1="260" x2="352" y2="260" stroke="#3E2723" stroke-width="2" opacity="0.3"/>
+</svg>
