@@ -67,6 +67,14 @@ class Favorites {
    * @returns {Object} Result object
    */
   create(reference, verseText, translation) {
+    // Validate required parameters
+    if (!reference || !verseText || !translation) {
+      return {
+        success: false,
+        message: 'Missing required parameters'
+      };
+    }
+
     if (this.isFavorite(reference, translation)) {
       return {
         success: false,
@@ -102,6 +110,23 @@ class Favorites {
    * @returns {Object} Result object
    */
   delete(id) {
+    // Validate ID parameter
+    if (!id || typeof id !== 'number') {
+      return {
+        success: false,
+        message: 'Invalid favorite ID'
+      };
+    }
+
+    // Check if favorite exists
+    const favorite = this.getById(id);
+    if (!favorite) {
+      return {
+        success: false,
+        message: 'Favorite not found'
+      };
+    }
+
     try {
       db.run('DELETE FROM favorites WHERE id = ?', [id]);
 
