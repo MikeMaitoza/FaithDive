@@ -106,6 +106,7 @@ class Database {
     const data = this.db.export();
     const buffer = Array.from(data);
     localStorage.setItem('faithdive_db', JSON.stringify(buffer));
+    console.log('💾 Database saved to localStorage');
   }
 
   /**
@@ -128,6 +129,7 @@ class Database {
    */
   all(sql, params = []) {
     const results = this.db.exec(sql, params);
+    console.log('📖 Database query:', sql, 'Results:', results.length > 0 ? results[0].values.length : 0);
     if (results.length === 0) return [];
 
     const columns = results[0].columns;
