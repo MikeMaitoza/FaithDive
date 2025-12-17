@@ -33,9 +33,11 @@ async function initApp() {
 // Navigation handler
 function setupNavigation() {
   const navButtons = document.querySelectorAll('.nav-btn');
+  console.log('🔧 Setting up navigation, found', navButtons.length, 'buttons');
 
   navButtons.forEach(button => {
     button.addEventListener('click', () => {
+      console.log('🔧 Navigation button clicked:', button.dataset.page);
       navButtons.forEach(btn => btn.classList.remove('active'));
       button.classList.add('active');
 
@@ -132,6 +134,23 @@ function setupSearchEventListeners() {
   keyInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') searchByKeyword();
   });
+
+  // Event delegation for Add to Journal and Add to Favorites buttons
+  const resultsDiv = document.getElementById('search-results');
+  resultsDiv.addEventListener('click', (e) => {
+    const target = e.target.closest('button');
+    if (!target) return;
+
+    if (target.classList.contains('btn-add-favorite')) {
+      const reference = target.dataset.reference;
+      const text = target.dataset.text;
+      addToFavorites(reference, text);
+    } else if (target.classList.contains('btn-add-journal')) {
+      const reference = target.dataset.reference;
+      const text = target.dataset.text;
+      addToJournal(reference, text);
+    }
+  });
 }
 
 // Search by reference
@@ -160,10 +179,10 @@ async function searchByReference() {
         <h3 class="verse-reference">${result.reference}</h3>
         <div class="verse-text">${result.text}</div>
         <div class="verse-actions">
-          <button class="btn-action" onclick="addToJournal('${escapeHtml(result.reference)}', '${escapeHtml(result.text)}')">
+          <button class="btn-action btn-add-journal" data-reference="${escapeHtml(result.reference)}" data-text="${escapeHtml(result.text)}">
             📖 Add to Journal
           </button>
-          <button class="btn-action" onclick="addToFavorites('${escapeHtml(result.reference)}', '${escapeHtml(result.text)}')">
+          <button class="btn-action btn-add-favorite" data-reference="${escapeHtml(result.reference)}" data-text="${escapeHtml(result.text)}">
             ⭐ Add to Favorites
           </button>
         </div>
@@ -204,10 +223,10 @@ async function searchByKeyword() {
           <h3 class="verse-reference">${verse.reference}</h3>
           <div class="verse-text">${verse.text}</div>
           <div class="verse-actions">
-            <button class="btn-action" onclick="addToJournal('${escapeHtml(verse.reference)}', '${escapeHtml(verse.text)}')">
+            <button class="btn-action btn-add-journal" data-reference="${escapeHtml(verse.reference)}" data-text="${escapeHtml(verse.text)}">
               📖 Add to Journal
             </button>
-            <button class="btn-action" onclick="addToFavorites('${escapeHtml(verse.reference)}', '${escapeHtml(verse.text)}')">
+            <button class="btn-action btn-add-favorite" data-reference="${escapeHtml(verse.reference)}" data-text="${escapeHtml(verse.text)}">
               ⭐ Add to Favorites
             </button>
           </div>
@@ -326,6 +345,7 @@ function loadJournalPage() {
 
 // Show journal entry modal
 window.showJournalEntryModal = function(reference = '', verseText = '', notes = '', entryId = null) {
+  console.log('🔧 showJournalEntryModal called:', { reference, verseText, notes, entryId });
   const modal = document.getElementById('journal-modal');
   const modalTitle = document.getElementById('modal-title');
   const refInput = document.getElementById('entry-reference');
@@ -339,6 +359,7 @@ window.showJournalEntryModal = function(reference = '', verseText = '', notes = 
   refInput.value = reference;
   verseInput.value = verseText;
   notesInput.value = notes;
+  console.log('🔧 Fields set - Reference:', refInput.value, 'Verse:', verseInput.value);
 
   // Store entry ID if editing
   modal.dataset.entryId = entryId || '';
@@ -417,6 +438,7 @@ window.deleteJournalEntry = function(id) {
 
 // Add to journal (global function for onclick)
 window.addToJournal = function(reference, verseText) {
+  console.log('🔧 addToJournal called:', { reference, verseText });
   // Switch to journal tab
   const journalBtn = document.querySelector('[data-page="journal"]');
   const navButtons = document.querySelectorAll('.nav-btn');
@@ -429,6 +451,7 @@ window.addToJournal = function(reference, verseText) {
 
   // Small delay to ensure modal is rendered
   setTimeout(() => {
+    console.log('🔧 Calling showJournalEntryModal with:', { reference, verseText });
     showJournalEntryModal(reference, verseText, '');
   }, 100);
 };
@@ -508,9 +531,11 @@ function loadMorePage() {
 }
 
 function loadFavoritesPage() {
+  console.log('🔧 Loading favorites page...');
   const mainContent = document.getElementById('main-content');
   const allFavorites = favorites.getAll();
   const favoriteCount = favorites.getCount();
+  console.log('🔧 Found favorites:', favoriteCount, allFavorites);
 
   mainContent.innerHTML = `
     <div class="card">
@@ -632,18 +657,23 @@ window.importData = function() {
 
 // Add to favorites (global function for onclick)
 window.addToFavorites = async function(reference, verseText) {
+  console.log('🔧 addToFavorites called:', { reference, verseText });
   try {
     const translation = await bibleSearch.getPreferredTranslation();
+    console.log('🔧 Translation:', translation);
 
     if (favorites.isFavorite(reference, translation)) {
+      console.log('🔧 Already favorited');
       alert('⭐ This verse is already in your favorites!');
       return;
     }
 
     const result = favorites.create(reference, verseText, translation);
+    console.log('🔧 Create result:', result);
 
     if (result.success) {
       alert('⭐ Added to favorites!');
+      console.log('🔧 Total favorites now:', favorites.getCount());
     } else {
       alert(`❌ ${result.message}`);
     }
