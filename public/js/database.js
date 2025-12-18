@@ -176,20 +176,24 @@ class Database {
     }
 
     // Import journals
-    data.journals.forEach(journal => {
-      this.run(
-        'INSERT INTO journals (reference, verse_text, notes, book, timestamp) VALUES (?, ?, ?, ?, ?)',
-        [journal.reference, journal.verse_text, journal.notes, journal.book, journal.timestamp]
-      );
-    });
+    if (data.journals && Array.isArray(data.journals)) {
+      data.journals.forEach(journal => {
+        this.run(
+          'INSERT INTO journals (reference, verse_text, notes, book, timestamp) VALUES (?, ?, ?, ?, ?)',
+          [journal.reference, journal.verse_text, journal.notes, journal.book, journal.timestamp]
+        );
+      });
+    }
 
     // Import favorites
-    data.favorites.forEach(fav => {
-      this.run(
-        'INSERT INTO favorites (reference, verse_text, translation, created_at) VALUES (?, ?, ?, ?)',
-        [fav.reference, fav.verse_text || '', fav.translation, fav.created_at]
-      );
-    });
+    if (data.favorites && Array.isArray(data.favorites)) {
+      data.favorites.forEach(fav => {
+        this.run(
+          'INSERT INTO favorites (reference, verse_text, translation, created_at) VALUES (?, ?, ?, ?)',
+          [fav.reference, fav.verse_text || '', fav.translation, fav.created_at]
+        );
+      });
+    }
 
     // Import settings
     if (data.settings) {
