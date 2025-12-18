@@ -730,8 +730,16 @@ window.importData = function() {
         const data = JSON.parse(event.target.result);
 
         if (confirm('⚠️ This will replace all existing data. Continue?')) {
-          db.importData(data, true);
-          alert('✅ Data imported successfully!');
+          const result = db.importData(data, true);
+
+          if (result.success && result.warnings.length === 0) {
+            alert('✅ Data imported successfully!');
+          } else if (result.success && result.warnings.length > 0) {
+            alert(`⚠️ Data imported with warnings:\n\n${result.warnings.join('\n')}\n\nValid data was imported successfully.`);
+          } else {
+            alert(`❌ Data import failed:\n\n${result.errors.join('\n')}\n\n${result.warnings.length > 0 ? 'Warnings:\n' + result.warnings.join('\n') : ''}`);
+          }
+
           loadMorePage(); // Reload to show updated stats
         }
       } catch (error) {

@@ -167,8 +167,14 @@ class Database {
 
   /**
    * Import database from JSON
+   * @param {Object} data - Export data object with journals, favorites, and settings
+   * @param {boolean} replace - If true, clears existing data before import
+   * @returns {Object} Result object with success flag and any error/warning messages
    */
   importData(data, replace = false) {
+    const errors = [];
+    const warnings = [];
+
     if (replace) {
       // Clear existing data
       this.run('DELETE FROM journals');
@@ -177,22 +183,47 @@ class Database {
 
     // Import journals
     if (data.journals && Array.isArray(data.journals)) {
-      data.journals.forEach(journal => {
-        this.run(
-          'INSERT INTO journals (reference, verse_text, notes, book, timestamp) VALUES (?, ?, ?, ?, ?)',
-          [journal.reference, journal.verse_text, journal.notes, journal.book, journal.timestamp]
-        );
+      data.journals.forEach((journal, index) => {
+        if (journal && journal.reference && journal.verse_text && journal.notes &&
+            journal.book && journal.timestamp) {
+          try {
+            this.run(
+              'INSERT INTO journals (reference, verse_text, notes, book, timestamp) VALUES (?, ?, ?, ?, ?)',
+              [journal.reference, journal.verse_text, journal.notes, journal.book, journal.timestamp]
+            );
+          } catch (error) {
+            console.warn(`Failed to import journal at index ${index}:`, error);
+            warnings.push(`Skipped journal entry at position ${index + 1}: ${error.message}`);
+          }
+        } else {
+          console.warn(`Skipping invalid journal entry at index ${index}:`, journal);
+          warnings.push(`Skipped invalid journal entry at position ${index + 1}`);
+        }
       });
+    } else if (data.journals !== undefined) {
+      errors.push('Journals data is invalid or corrupted');
     }
 
     // Import favorites
     if (data.favorites && Array.isArray(data.favorites)) {
-      data.favorites.forEach(fav => {
-        this.run(
-          'INSERT INTO favorites (reference, verse_text, translation, created_at) VALUES (?, ?, ?, ?)',
-          [fav.reference, fav.verse_text || '', fav.translation, fav.created_at]
-        );
+      data.favorites.forEach((fav, index) => {
+        if (fav && fav.reference && fav.translation && fav.created_at) {
+          try {
+            this.run(
+              'INSERT INTO favorites (reference, verse_text, translation, created_at) VALUES (?, ?, ?, ?)',
+              [fav.reference, fav.verse_text || '', fav.translation, fav.created_at]
+            );
+          } catch (error) {
+            console.warn(`Failed to import favorite at index ${index}:`, error);
+            warnings.push(`Skipped favorite entry at position ${index + 1}: ${error.message}`);
+          }
+        } else {
+          console.warn(`Skipping invalid favorite entry at index ${index}:`, fav);
+          warnings.push(`Skipped invalid favorite entry at position ${index + 1}`);
+        }
       });
+    } else if (data.favorites !== undefined) {
+      errors.push('Favorites data is invalid or corrupted');
     }
 
     // Import settings
@@ -204,6 +235,13 @@ class Database {
         );
       });
     }
+
+    // Return result with any errors or warnings
+    return {
+      success: errors.length === 0,
+      errors,
+      warnings
+    };
   }
 }
 
