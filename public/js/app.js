@@ -8,6 +8,42 @@ import theme from './theme.js';
 
 console.log('Faith Dive App Loading...');
 
+// Register Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then((registration) => {
+        console.log('✅ Service Worker registered:', registration.scope);
+
+        // Check for updates
+        registration.addEventListener('updatefound', () => {
+          const newWorker = registration.installing;
+          console.log('🔄 Service Worker update found');
+
+          newWorker.addEventListener('statechange', () => {
+            if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+              // New service worker installed, prompt user to refresh
+              console.log('✨ New version available! Refresh to update.');
+
+              // Show update notification
+              const updateBanner = document.createElement('div');
+              updateBanner.id = 'update-banner';
+              updateBanner.className = 'update-banner';
+              updateBanner.innerHTML = `
+                <p>✨ New version available!</p>
+                <button onclick="location.reload()">Refresh Now</button>
+              `;
+              document.body.appendChild(updateBanner);
+            }
+          });
+        });
+      })
+      .catch((error) => {
+        console.error('❌ Service Worker registration failed:', error);
+      });
+  });
+}
+
 // Initialize database
 async function initApp() {
   try {

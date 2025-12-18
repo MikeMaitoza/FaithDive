@@ -31,8 +31,23 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'healthy', service: 'Faith Dive API' });
 });
 
-// Serve static files from public directory
-app.use(express.static(path.join(__dirname, '../public')));
+// Serve static files with cache control
+// JS and CSS files: no-cache (rely on service worker + version params)
+// Other assets: cache for 1 hour
+app.use(express.static(path.join(__dirname, '../public'), {
+  setHeaders: (res, filePath) => {
+    if (filePath.endsWith('.js') || filePath.endsWith('.css')) {
+      // No cache for JS/CSS - always check for updates
+      res.setHeader('Cache-Control', 'no-cache, must-revalidate');
+    } else if (filePath.endsWith('.html')) {
+      // No cache for HTML
+      res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    } else {
+      // Cache other assets (images, fonts, etc.) for 1 hour
+      res.setHeader('Cache-Control', 'public, max-age=3600');
+    }
+  }
+}));
 
 // Catch-all route for SPA - serves frontend for non-API routes
 app.use((req, res) => {
