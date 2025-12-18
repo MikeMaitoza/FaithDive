@@ -227,13 +227,25 @@ class Database {
     }
 
     // Import settings
-    if (data.settings) {
-      data.settings.forEach(setting => {
-        this.run(
-          'INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)',
-          [setting.key, setting.value]
-        );
+    if (data.settings && Array.isArray(data.settings)) {
+      data.settings.forEach((setting, index) => {
+        if (setting && setting.key && setting.value) {
+          try {
+            this.run(
+              'INSERT OR REPLACE INTO settings (key, value) VALUES (?, ?)',
+              [setting.key, setting.value]
+            );
+          } catch (error) {
+            console.warn(`Failed to import setting at index ${index}:`, error);
+            warnings.push(`Skipped setting at position ${index + 1}: ${error.message}`);
+          }
+        } else {
+          console.warn(`Skipping invalid setting at index ${index}:`, setting);
+          warnings.push(`Skipped invalid setting at position ${index + 1}`);
+        }
       });
+    } else if (data.settings !== undefined) {
+      errors.push('Settings data is invalid or corrupted');
     }
 
     // Return result with any errors or warnings
