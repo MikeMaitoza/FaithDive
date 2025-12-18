@@ -210,15 +210,18 @@ async function searchByReference() {
       return;
     }
 
+    // Clean verse text for storage (strip HTML markup from API)
+    const cleanText = cleanVerseText(result.text);
+
     resultsDiv.innerHTML = `
       <div class="verse-result">
         <h3 class="verse-reference">${result.reference}</h3>
         <div class="verse-text">${result.text}</div>
         <div class="verse-actions">
-          <button class="btn-action btn-add-journal" data-reference="${escapeHtml(result.reference)}" data-text="${escapeHtml(result.text)}">
+          <button class="btn-action btn-add-journal" data-reference="${escapeAttr(result.reference)}" data-text="${escapeAttr(cleanText)}">
             📖 Add to Journal
           </button>
-          <button class="btn-action btn-add-favorite" data-reference="${escapeHtml(result.reference)}" data-text="${escapeHtml(result.text)}">
+          <button class="btn-action btn-add-favorite" data-reference="${escapeAttr(result.reference)}" data-text="${escapeAttr(cleanText)}">
             ⭐ Add to Favorites
           </button>
         </div>
@@ -254,15 +257,18 @@ async function searchByKeyword() {
     html += `<p class="results-count">Found ${results.total || results.verses.length} verse(s)</p>`;
 
     results.verses.forEach(verse => {
+      // Clean verse text for storage (strip HTML if present)
+      const cleanText = cleanVerseText(verse.text);
+
       html += `
         <div class="verse-result">
           <h3 class="verse-reference">${verse.reference}</h3>
           <div class="verse-text">${verse.text}</div>
           <div class="verse-actions">
-            <button class="btn-action btn-add-journal" data-reference="${escapeHtml(verse.reference)}" data-text="${escapeHtml(verse.text)}">
+            <button class="btn-action btn-add-journal" data-reference="${escapeAttr(verse.reference)}" data-text="${escapeAttr(cleanText)}">
               📖 Add to Journal
             </button>
-            <button class="btn-action btn-add-favorite" data-reference="${escapeHtml(verse.reference)}" data-text="${escapeHtml(verse.text)}">
+            <button class="btn-action btn-add-favorite" data-reference="${escapeAttr(verse.reference)}" data-text="${escapeAttr(cleanText)}">
               ⭐ Add to Favorites
             </button>
           </div>
@@ -282,6 +288,34 @@ function escapeHtml(text) {
   const div = document.createElement('div');
   div.textContent = text;
   return div.innerHTML;
+}
+
+// Helper function to strip HTML tags and get clean text
+function stripHtml(html) {
+  if (!html) return '';
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  return div.textContent || div.innerText || '';
+}
+
+// Helper function to clean verse text (strip HTML and extra whitespace)
+function cleanVerseText(html) {
+  if (!html) return '';
+  return stripHtml(html)
+    .replace(/\s+/g, ' ')  // Collapse multiple spaces
+    .replace(/¶\s*/g, '')  // Remove paragraph markers
+    .trim();
+}
+
+// Helper function to escape attributes safely for data attributes
+function escapeAttr(text) {
+  if (!text) return '';
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
 }
 
 // Load journal page
@@ -388,13 +422,20 @@ window.showJournalEntryModal = function(reference = '', verseText = '', notes = 
   const verseInput = document.getElementById('entry-verse');
   const notesInput = document.getElementById('entry-notes');
 
+  // Check if all elements exist
+  if (!modal || !modalTitle || !refInput || !verseInput || !notesInput) {
+    console.error('🔧 Modal elements not found in DOM');
+    console.error('🔧 Elements:', { modal, modalTitle, refInput, verseInput, notesInput });
+    return;
+  }
+
   // Set title based on whether we're editing or creating
   modalTitle.textContent = entryId ? 'Edit Journal Entry' : 'New Journal Entry';
 
   // Pre-fill fields
-  refInput.value = reference;
-  verseInput.value = verseText;
-  notesInput.value = notes;
+  refInput.value = reference || '';
+  verseInput.value = verseText || '';
+  notesInput.value = notes || '';
   console.log('🔧 Fields set - Reference:', refInput.value, 'Verse:', verseInput.value);
 
   // Store entry ID if editing
@@ -485,11 +526,11 @@ window.addToJournal = function(reference, verseText) {
   // Load journal page and open modal with pre-filled data
   loadJournalPage();
 
-  // Small delay to ensure modal is rendered
+  // Delay to ensure modal is fully rendered in DOM
   setTimeout(() => {
     console.log('🔧 Calling showJournalEntryModal with:', { reference, verseText });
     showJournalEntryModal(reference, verseText, '');
-  }, 100);
+  }, 200);
 };
 
 // Load more/settings page
