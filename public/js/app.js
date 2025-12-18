@@ -370,7 +370,7 @@ function loadJournalPage() {
       <div class="modal-content">
         <div class="modal-header">
           <h3 id="modal-title">New Journal Entry</h3>
-          <button class="btn-close" onclick="closeJournalModal()">✕</button>
+          <button id="modal-close-btn" class="btn-close">✕</button>
         </div>
         <div class="modal-body">
           <div class="form-group">
@@ -405,12 +405,29 @@ function loadJournalPage() {
           </div>
         </div>
         <div class="modal-footer">
-          <button class="btn-secondary" onclick="closeJournalModal()">Cancel</button>
-          <button class="btn-primary" onclick="saveJournalEntry()">Save Entry</button>
+          <button id="modal-cancel-btn" class="btn-secondary">Cancel</button>
+          <button id="modal-save-btn" class="btn-primary">Save Entry</button>
         </div>
       </div>
     </div>
   `;
+
+  // Set up event listeners for modal buttons (after DOM is updated)
+  setTimeout(() => {
+    const closeBtn = document.getElementById('modal-close-btn');
+    const cancelBtn = document.getElementById('modal-cancel-btn');
+    const saveBtn = document.getElementById('modal-save-btn');
+
+    if (closeBtn) {
+      closeBtn.addEventListener('click', closeJournalModal);
+    }
+    if (cancelBtn) {
+      cancelBtn.addEventListener('click', closeJournalModal);
+    }
+    if (saveBtn) {
+      saveBtn.addEventListener('click', saveJournalEntry);
+    }
+  }, 50);
 }
 
 // Show journal entry modal
