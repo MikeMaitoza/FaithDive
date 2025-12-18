@@ -472,8 +472,10 @@ window.showJournalEntryModal = function(reference = '', verseText = '', notes = 
 // Close journal modal
 window.closeJournalModal = function() {
   const modal = document.getElementById('journal-modal');
-  modal.classList.add('hidden');
-  modal.dataset.entryId = '';
+  if (modal) {
+    modal.classList.add('hidden');
+    modal.dataset.entryId = '';
+  }
 };
 
 // Save journal entry

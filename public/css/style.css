@@ -580,6 +580,10 @@ body {
     padding: var(--spacing-md);
 }
 
+.modal.hidden {
+    display: none !important;
+}
+
 .modal-content {
     background-color: var(--bg-secondary);
     border-radius: var(--border-radius);
