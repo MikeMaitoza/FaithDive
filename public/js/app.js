@@ -432,7 +432,6 @@ function loadJournalPage() {
 
 // Show journal entry modal
 window.showJournalEntryModal = function(reference = '', verseText = '', notes = '', entryId = null) {
-  console.log('🔧 showJournalEntryModal called:', { reference, verseText, notes, entryId });
   const modal = document.getElementById('journal-modal');
   const modalTitle = document.getElementById('modal-title');
   const refInput = document.getElementById('entry-reference');
@@ -441,8 +440,7 @@ window.showJournalEntryModal = function(reference = '', verseText = '', notes = 
 
   // Check if all elements exist
   if (!modal || !modalTitle || !refInput || !verseInput || !notesInput) {
-    console.error('🔧 Modal elements not found in DOM');
-    console.error('🔧 Elements:', { modal, modalTitle, refInput, verseInput, notesInput });
+    console.error('Modal elements not found in DOM');
     return;
   }
 
@@ -453,7 +451,6 @@ window.showJournalEntryModal = function(reference = '', verseText = '', notes = 
   refInput.value = reference || '';
   verseInput.value = verseText || '';
   notesInput.value = notes || '';
-  console.log('🔧 Fields set - Reference:', refInput.value, 'Verse:', verseInput.value);
 
   // Store entry ID if editing
   modal.dataset.entryId = entryId || '';
@@ -534,7 +531,6 @@ window.deleteJournalEntry = function(id) {
 
 // Add to journal (global function for onclick)
 window.addToJournal = function(reference, verseText) {
-  console.log('🔧 addToJournal called:', { reference, verseText });
   // Switch to journal tab
   const journalBtn = document.querySelector('[data-page="journal"]');
   const navButtons = document.querySelectorAll('.nav-btn');
@@ -547,7 +543,6 @@ window.addToJournal = function(reference, verseText) {
 
   // Delay to ensure modal is fully rendered in DOM
   setTimeout(() => {
-    console.log('🔧 Calling showJournalEntryModal with:', { reference, verseText });
     showJournalEntryModal(reference, verseText, '');
   }, 200);
 };
@@ -753,23 +748,18 @@ window.importData = function() {
 
 // Add to favorites (global function for onclick)
 window.addToFavorites = async function(reference, verseText) {
-  console.log('🔧 addToFavorites called:', { reference, verseText });
   try {
     const translation = await bibleSearch.getPreferredTranslation();
-    console.log('🔧 Translation:', translation);
 
     if (favorites.isFavorite(reference, translation)) {
-      console.log('🔧 Already favorited');
       alert('⭐ This verse is already in your favorites!');
       return;
     }
 
     const result = favorites.create(reference, verseText, translation);
-    console.log('🔧 Create result:', result);
 
     if (result.success) {
       alert('⭐ Added to favorites!');
-      console.log('🔧 Total favorites now:', favorites.getCount());
     } else {
       alert(`❌ ${result.message}`);
     }
