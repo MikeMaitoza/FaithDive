@@ -762,6 +762,107 @@ When asking for help, include:
 
 ---
 
+## Development Status & TODO
+
+### Recent Session Summary (2025-12-19)
+
+**Bugs Fixed:**
+- ✅ **BUG-005**: Loading states during API calls
+  - Added animated CSS spinner with ARIA accessibility
+  - Supports reduced motion for accessibility
+  - Works in both light and dark modes
+  - Commits: `cf25f98`, `c31c808`
+
+- ✅ **BUG-006**: Keyword search completely broken
+  - Root cause: Data structure mismatch (backend returned array, frontend expected object)
+  - Fixed: Wrapped search results in `{verses: [...], total: X}` structure
+  - Updated tests to match new response format
+  - All 24 tests passing with 73.87% coverage
+  - Commits: `d30ca13`, `b386cfc`
+
+**Completed Work:**
+- Enhanced export/import with validation and error handling
+- Added mandatory superpowers workflow to documentation
+- Fixed modal close buttons (CSS specificity + event listeners)
+- Implemented systematic debugging workflow for all bugs
+
+### Current MVP Status
+
+**Phase 1: Core Features - COMPLETE** ✅
+- [x] Bible search (reference + keyword)
+- [x] Journaling system (CRUD operations)
+- [x] Dark mode toggle
+- [x] Export/import data
+- [x] Favorites system
+
+**Phase 2: Bug Fixes - IN PROGRESS** 🔄
+- [x] BUG-001: Browser cache blocking updates (cache-busting)
+- [x] BUG-002: Modal buttons not working (CSS + event listeners)
+- [x] BUG-003: Journal modal verse text empty (HTML stripping)
+- [x] BUG-004: Export/import validation (defensive programming)
+- [x] BUG-005: Loading states (animated spinner)
+- [x] BUG-006: Keyword search broken (data structure fix)
+- [ ] **NEXT**: User testing and bug reports from real usage
+
+**Phase 3: Polish & Deploy - PENDING** ⏳
+- [ ] Final user acceptance testing
+- [ ] Performance optimization
+- [ ] PWA manifest and icons
+- [ ] Deployment to production
+- [ ] Documentation finalization
+
+### Known Issues & Technical Debt
+
+**Important (Should Fix):**
+1. **API Response Structure Inconsistency**
+   - Reference search: Returns `{reference, text, bibleId}`
+   - Keyword search: Returns `{verses: [...], total: X}`
+   - Consider standardizing both to use envelope pattern
+   - Location: `server/routes/bible.js`
+
+2. **Missing JSDoc Documentation**
+   - API routes lack response structure documentation
+   - Add JSDoc comments with request/response examples
+   - Location: `server/routes/bible.js:54-56`
+
+**Minor (Nice to Have):**
+1. Add progress logging for search debugging
+2. Consider TypeScript migration for type safety
+3. Add integration tests for frontend-backend contracts
+4. Create API documentation file (`/docs/api.md`)
+
+### Testing Status
+
+**Current Coverage:** 73.87% overall
+- Routes: 81.08%
+- Services: 78.37%
+- Config: 100%
+
+**Test Suites:** 6 passed
+**Total Tests:** 24 passed
+
+### Next Session Priorities
+
+1. **User Testing**: Test all features in browser to ensure keyword search fix works
+2. **Bug Triage**: Identify any remaining P0 bugs from user testing
+3. **Polish**: Address Important issues if time permits
+4. **Deploy**: Prepare for production deployment
+
+### Development Notes
+
+**Working Well:**
+- Systematic debugging workflow catches issues reliably
+- Code review process prevents regressions
+- Test suite provides confidence in changes
+- Superpowers skills enforce quality standards
+
+**Areas for Improvement:**
+- Need integration tests for frontend-backend contracts
+- API response standardization would prevent future mismatches
+- Consider adding TypeScript for compile-time type checking
+
+---
+
 ## Additional Resources
 
 - [Express.js Documentation](https://expressjs.com/)
