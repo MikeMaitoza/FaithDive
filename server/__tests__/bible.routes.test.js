@@ -93,7 +93,9 @@ describe('Bible Routes', () => {
         .query({ q: 'love', bible_id: 'KJV' })
         .expect(200);
 
-      expect(response.body).toHaveLength(1);
+      expect(response.body.verses).toHaveLength(1);
+      expect(response.body.total).toBe(1);
+      expect(response.body.verses[0].reference).toBe('John 3:16');
     });
 
     it('should return 400 if query missing', async () => {
