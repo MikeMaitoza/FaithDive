@@ -628,6 +628,100 @@ npm run test:watch # Watch mode
 
 ## Working with AI Assistants
 
+### MANDATORY: Use Superpowers for Every Task
+
+**CRITICAL REQUIREMENT**: When working with Claude Code on this project, you MUST utilize the superpowers plugin for ALL development tasks. This is not optional.
+
+#### Required Workflows
+
+1. **Code Review - ALWAYS**
+   - Use `superpowers:requesting-code-review` after EVERY set of changes
+   - Never skip code review, even for "simple" changes
+   - Fix all Critical and Important issues before proceeding
+   - Commit only after code review approval
+
+2. **Debugging - ALWAYS**
+   - Use `superpowers:systematic-debugging` for ANY bug or unexpected behavior
+   - Follow the 4-phase process: Root Cause → Pattern Analysis → Hypothesis → Implementation
+   - NEVER propose fixes without completing Phase 1 (Root Cause Investigation)
+   - No guessing, no "quick fixes" - systematic approach only
+
+3. **Planning - When Needed**
+   - Use `superpowers:brainstorming` before implementing complex features
+   - Use `superpowers:writing-plans` for multi-step implementations
+   - Use `superpowers:executing-plans` to implement plans with review checkpoints
+
+4. **Testing - ALWAYS**
+   - Use `superpowers:test-driven-development` when implementing features
+   - Write tests BEFORE implementation code
+   - Use `superpowers:verification-before-completion` before claiming work is done
+
+#### Skill Usage Pattern
+
+**For EVERY task, follow this pattern:**
+
+```
+1. Receive task from user
+2. Check if relevant superpowers skill exists
+3. Use the Skill tool to invoke it
+4. Follow the skill's instructions exactly
+5. Complete the work
+6. Use code-reviewer skill
+7. Address code review feedback
+8. Verify completion
+9. Commit and push
+```
+
+**Example Task Flow:**
+
+```
+User: "Fix the search bug"
+
+1. Use superpowers:systematic-debugging
+   - Phase 1: Gather evidence, find root cause
+   - Phase 2: Pattern analysis
+   - Phase 3: Test hypothesis
+   - Phase 4: Implement fix
+
+2. Use superpowers:requesting-code-review
+   - Review the fix
+   - Address any issues found
+
+3. Use superpowers:verification-before-completion
+   - Run tests
+   - Verify fix works
+   - Confirm no regressions
+
+4. Commit with descriptive message
+5. Push to origin
+```
+
+#### Never Skip Superpowers
+
+**Forbidden shortcuts:**
+- ❌ "This is too simple for code review"
+- ❌ "I'll just quickly fix this without debugging workflow"
+- ❌ "No need for systematic approach on small changes"
+- ❌ "Skip verification, it obviously works"
+
+**Always remember:**
+- ✅ Code review catches issues before they compound
+- ✅ Systematic debugging is faster than random fixes
+- ✅ Planning prevents wasted effort
+- ✅ Verification prevents claiming broken features work
+
+#### Available Superpowers Skills
+
+- `superpowers:systematic-debugging` - Debug ANY issue systematically
+- `superpowers:requesting-code-review` - Get code reviewed before merging
+- `superpowers:test-driven-development` - Write tests first
+- `superpowers:verification-before-completion` - Verify before claiming done
+- `superpowers:brainstorming` - Refine ideas before coding
+- `superpowers:writing-plans` - Create detailed implementation plans
+- `superpowers:executing-plans` - Execute plans with review checkpoints
+- `superpowers:root-cause-tracing` - Trace errors to source
+- `superpowers:defense-in-depth` - Add validation at multiple layers
+
 ### Context to Provide
 
 When asking for help, include:
