@@ -68,7 +68,10 @@ router.get('/search', async (req, res) => {
 
     const results = await bibleService.search(q, bible_id, parseInt(limit));
 
-    res.json(results);
+    res.json({
+      verses: results,
+      total: results.length
+    });
   } catch (error) {
     console.error('Error in /search:', error);
     res.status(500).json({ error: 'Internal server error' });
