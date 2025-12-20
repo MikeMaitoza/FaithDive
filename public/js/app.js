@@ -200,7 +200,7 @@ async function searchByReference() {
     return;
   }
 
-  resultsDiv.innerHTML = '<p class="loading"><span class="loading-spinner"></span>Searching...</p>';
+  resultsDiv.innerHTML = '<p class="loading" role="status" aria-live="polite"><span class="loading-spinner" aria-hidden="true"></span>Searching...</p>';
 
   try {
     const result = await bibleSearch.searchByReference(reference);
@@ -243,7 +243,7 @@ async function searchByKeyword() {
     return;
   }
 
-  resultsDiv.innerHTML = '<p class="loading"><span class="loading-spinner"></span>Searching...</p>';
+  resultsDiv.innerHTML = '<p class="loading" role="status" aria-live="polite"><span class="loading-spinner" aria-hidden="true"></span>Searching...</p>';
 
   try {
     const results = await bibleSearch.searchByKeyword(query);

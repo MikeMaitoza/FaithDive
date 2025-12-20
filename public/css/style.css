@@ -118,6 +118,15 @@ body {
     100% { transform: rotate(360deg); }
 }
 
+/* Respect user's motion preferences */
+@media (prefers-reduced-motion: reduce) {
+    .loading-spinner {
+        animation: none;
+        border-top-color: var(--accent-gold);
+        border-right-color: var(--accent-gold);
+    }
+}
+
 /* ===== Bottom Navigation ===== */
 .bottom-nav {
     position: fixed;
