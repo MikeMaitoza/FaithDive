@@ -6,24 +6,17 @@ import journal from './journal.js';
 import favorites from './favorites.js';
 import theme from './theme.js';
 
-console.log('Faith Dive App Loading...');
-
 // Register Service Worker
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
     navigator.serviceWorker.register('/sw.js')
       .then((registration) => {
-        console.log('✅ Service Worker registered:', registration.scope);
-
         // Check for updates
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing;
-          console.log('🔄 Service Worker update found');
 
           newWorker.addEventListener('statechange', () => {
             if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-              // New service worker installed, prompt user to refresh
-              console.log('✨ New version available! Refresh to update.');
 
               // Show update notification
               const updateBanner = document.createElement('div');
@@ -48,11 +41,7 @@ if ('serviceWorker' in navigator) {
 async function initApp() {
   try {
     await db.init();
-    console.log('✅ Database initialized');
-
-    // Initialize theme
     theme.init();
-    console.log('✅ Theme initialized');
 
     setupNavigation();
     setupOfflineDetection();
@@ -69,11 +58,9 @@ async function initApp() {
 // Navigation handler
 function setupNavigation() {
   const navButtons = document.querySelectorAll('.nav-btn');
-  console.log('🔧 Setting up navigation, found', navButtons.length, 'buttons');
 
   navButtons.forEach(button => {
     button.addEventListener('click', () => {
-      console.log('🔧 Navigation button clicked:', button.dataset.page);
       navButtons.forEach(btn => btn.classList.remove('active'));
       button.classList.add('active');
 
@@ -622,11 +609,9 @@ function loadMorePage() {
 }
 
 function loadFavoritesPage() {
-  console.log('🔧 Loading favorites page...');
   const mainContent = document.getElementById('main-content');
   const allFavorites = favorites.getAll();
   const favoriteCount = favorites.getCount();
-  console.log('🔧 Found favorites:', favoriteCount, allFavorites);
 
   mainContent.innerHTML = `
     <div class="card">
@@ -687,8 +672,7 @@ window.deleteFavoriteEntry = function(id) {
 
 // Toggle theme
 window.toggleTheme = function() {
-  const newTheme = theme.toggle();
-  console.log(`Theme switched to: ${newTheme}`);
+  theme.toggle();
 };
 
 // Export data

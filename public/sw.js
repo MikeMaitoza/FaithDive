@@ -22,16 +22,12 @@ const STATIC_ASSETS = [
 
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
-  console.log('[Service Worker] Installing version', CACHE_VERSION);
-
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('[Service Worker] Caching static assets');
         return cache.addAll(STATIC_ASSETS);
       })
       .then(() => {
-        console.log('[Service Worker] Installation complete');
         // Force activation immediately
         return self.skipWaiting();
       })
@@ -43,22 +39,18 @@ self.addEventListener('install', (event) => {
 
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
-  console.log('[Service Worker] Activating version', CACHE_VERSION);
-
   event.waitUntil(
     caches.keys()
       .then((cacheNames) => {
         return Promise.all(
           cacheNames.map((cacheName) => {
             if (cacheName !== CACHE_NAME && cacheName.startsWith('faithdive-')) {
-              console.log('[Service Worker] Deleting old cache:', cacheName);
               return caches.delete(cacheName);
             }
           })
         );
       })
       .then(() => {
-        console.log('[Service Worker] Activation complete');
         // Take control of all pages immediately
         return self.clients.claim();
       })
@@ -81,10 +73,7 @@ self.addEventListener('fetch', (event) => {
     caches.match(request)
       .then((cachedResponse) => {
         if (cachedResponse) {
-          // Return cached version
-          console.log('[Service Worker] Serving from cache:', request.url);
-
-          // Fetch and update cache in background for next time
+          // Return cached version, fetch and update cache in background for next time
           fetch(request)
             .then((networkResponse) => {
               if (networkResponse && networkResponse.status === 200) {
@@ -101,7 +90,6 @@ self.addEventListener('fetch', (event) => {
         }
 
         // Not in cache, fetch from network
-        console.log('[Service Worker] Fetching from network:', request.url);
         return fetch(request)
           .then((networkResponse) => {
             // Cache successful responses
@@ -125,7 +113,6 @@ self.addEventListener('fetch', (event) => {
 // Message event - handle commands from app
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
-    console.log('[Service Worker] Received SKIP_WAITING message');
     self.skipWaiting();
   }
 
