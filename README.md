@@ -1,281 +1,73 @@
-# Faith Dive - Bible Journaling PWA
+# Faith Dive
 
-A beautiful, offline-capable Progressive Web App for personal Bible study and journaling. Search Scripture, write reflections, and grow in your faith journey.
-
-## Features
-
-### 🔍 Bible Search
-- **Reference Search**: Look up specific verses (e.g., "John 3:16", "Psalm 23")
-- **Keyword Search**: Find verses containing specific words or phrases
-- **Multiple Translations**: Access hundreds of Bible translations via API.Bible
-- **Instant Results**: Fast, responsive search with beautiful formatting
-
-### 📖 Journal
-- **Create Entries**: Save Bible verses with your personal reflections
-- **Full CRUD**: Create, read, update, and delete journal entries
-- **Organized Display**: View all entries sorted by date
-- **Rich Text**: Preserve formatting in your notes
-
-### 🌙 Dark Mode
-- **Theme Toggle**: Switch between light and dark modes
-- **Persistent Preference**: Your theme choice is saved
-- **Beautiful Design**: Both themes feature warm, traditional aesthetics
-- **Optimized Contrast**: Easy on the eyes in any lighting condition
-
-### 💾 Data Management
-- **Export Backup**: Download all your data as JSON
-- **Import Data**: Restore from backup files
-- **Complete Privacy**: All data stored locally in your browser
-- **Offline Capable**: Works without internet connection
-
-### 📱 Progressive Web App
-- **Installable**: Add to your home screen on mobile devices
-- **Responsive Design**: Works perfectly on phones, tablets, and desktops
-- **Fast Loading**: Optimized performance
-- **Mobile-First**: Designed primarily for on-the-go use
+A personal, offline-capable Bible study PWA. Search Scripture, journal reflections, save favorites — all stored locally in your browser.
 
 ## Tech Stack
 
-### Frontend
-- **HTML5**: Semantic markup
-- **CSS3**: Modern styling with CSS variables
-- **JavaScript (ES6+)**: Modular, clean code
-- **sql.js**: SQLite database in the browser
+- **Frontend:** Vanilla JS (ES6 modules), HTML5, CSS3 with custom properties
+- **Backend:** Node.js + Express.js (static file server + API proxy)
+- **Database:** sql.js (SQLite compiled to WebAssembly, runs in the browser)
+- **Bible Data:** API.Bible (proxied through Express to protect the API key)
+- **Caching:** Service worker with stale-while-revalidate strategy
+- **Testing:** Jest + supertest
 
-### Backend
-- **Node.js**: JavaScript runtime
-- **Express.js**: Web application framework
-- **API.Bible**: Bible text provider
+## Setup
 
-### Database
-- **sql.js**: Client-side SQLite for local storage
-- **LocalStorage**: Persistent data storage in browser
+```bash
+git clone https://github.com/MikeMaitoza/FaithDive.git
+cd FaithDive
+npm install
+cp .env.example .env
+# Add your API.Bible key to .env (free at https://scripture.api.bible)
+npm run dev
+```
 
-## Installation
+Open `http://localhost:3000`.
 
-### Prerequisites
-- Node.js (v14 or higher)
-- npm or yarn
-- API.Bible API key (free at https://scripture.api.bible)
+## Scripts
 
-### Setup
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/MikeMaitoza/FaithDive.git
-   cd FaithDive
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Configure environment**
-   ```bash
-   cp .env.example .env
-   ```
-
-   Edit `.env` and add your API.Bible key:
-   ```env
-   BIBLE_API_KEY=your_api_key_here
-   BIBLE_API_BASE_URL=https://api.scripture.api.bible/v1
-   PORT=3000
-   NODE_ENV=development
-   ```
-
-4. **Start the development server**
-   ```bash
-   npm run dev
-   ```
-
-5. **Open your browser**
-   Navigate to `http://localhost:3000`
-
-## Usage
-
-### Searching for Verses
-
-**Reference Search:**
-1. Click the 🔍 Search tab
-2. Enter a Bible reference (e.g., "John 3:16", "Genesis 1:1-3")
-3. Click "Search" or press Enter
-4. View the verse with options to add to journal or favorites
-
-**Keyword Search:**
-1. Click the 🔍 Search tab
-2. Toggle to "Keyword" mode
-3. Enter words to search for (e.g., "love", "faith")
-4. Browse results with full context
-
-### Creating Journal Entries
-
-**From Search Results:**
-1. Search for a verse
-2. Click "📖 Add to Journal"
-3. Write your thoughts and reflections
-4. Click "Save Entry"
-
-**Manual Entry:**
-1. Click the 📖 Journal tab
-2. Click "➕ New Entry"
-3. Fill in reference, verse text, and notes
-4. Click "Save Entry"
-
-### Enabling Dark Mode
-
-1. Click the ⋯ More tab
-2. Toggle the 🌙 Dark Mode switch
-3. Your preference is automatically saved
-
-### Backing Up Your Data
-
-**Export:**
-1. Go to Settings (⋯ More tab)
-2. Click "📤 Export All Data"
-3. Save the JSON file
-
-**Import:**
-1. Go to Settings (⋯ More tab)
-2. Click "📥 Import Data"
-3. Select your backup JSON file
+| Command | Description |
+|---------|-------------|
+| `npm start` | Production server |
+| `npm run dev` | Development with auto-reload (nodemon) |
+| `npm test` | Run all tests with coverage |
+| `npm run test:watch` | Watch mode for development |
 
 ## Project Structure
 
 ```
 FaithDive/
-├── public/                 # Frontend files
-│   ├── css/
-│   │   └── style.css      # All styling with CSS variables
-│   ├── icons/
-│   │   └── icon.svg       # App icon
-│   ├── js/
-│   │   ├── app.js         # Main application logic
-│   │   ├── bibleSearch.js # Bible API integration
-│   │   ├── database.js    # sql.js wrapper
-│   │   ├── journal.js     # Journal management
-│   │   └── theme.js       # Theme switching
-│   ├── index.html         # Main HTML file
-│   └── manifest.json      # PWA manifest
-├── server/                # Backend files
-│   ├── __tests__/        # Test files
-│   ├── routes/           # API routes
-│   ├── services/         # Business logic
-│   ├── config.js         # Configuration
-│   └── index.js          # Server entry point
-├── .env.example          # Environment template
-├── .gitignore           # Git ignore rules
-├── package.json         # Dependencies
-└── README.md           # This file
+├── public/                 # Frontend (served directly, no build step)
+│   ├── css/style.css       # Styling with CSS variables
+│   ├── js/                 # ES6 modules
+│   │   ├── app.js          # Main app logic, routing, SW registration
+│   │   ├── bibleSearch.js  # Bible API integration
+│   │   ├── database.js     # sql.js wrapper
+│   │   ├── favorites.js    # Favorites management
+│   │   ├── journal.js      # Journal CRUD
+│   │   └── theme.js        # Light/dark theme toggle
+│   ├── index.html          # Single-page app shell
+│   ├── sw.js               # Service worker (offline caching)
+│   └── manifest.json       # PWA manifest
+├── server/
+│   ├── __tests__/          # All tests
+│   ├── routes/bible.js     # Bible search API proxy
+│   ├── services/bibleApi.js # API.Bible client
+│   ├── config.js           # Environment config
+│   └── index.js            # Express entry point
+└── package.json
 ```
 
-## Development
+## Architecture
 
-### Running Tests
-```bash
-npm test
-```
+No build step. The frontend is vanilla JS served directly from `public/`. Each module in `public/js/` handles one concern and is imported by `app.js`.
 
-### Running with Auto-Reload
-```bash
-npm run dev
-```
+All user data (journal entries, favorites, settings) lives in a sql.js SQLite database in the browser. Nothing leaves the device except Bible search queries, which are proxied through Express to keep the API key server-side.
 
-### Production Build
-```bash
-npm start
-```
-
-## Database Schema
-
-### journals
-- `id`: INTEGER PRIMARY KEY
-- `reference`: TEXT (e.g., "John 3:16")
-- `verse_text`: TEXT (the verse content)
-- `notes`: TEXT (user's reflections)
-- `book`: TEXT (extracted book name)
-- `timestamp`: TEXT (ISO date string)
-
-### favorites
-- `id`: INTEGER PRIMARY KEY
-- `reference`: TEXT
-- `translation`: TEXT (Bible version ID)
-- `created_at`: TEXT
-
-### settings
-- `key`: TEXT PRIMARY KEY
-- `value`: TEXT
-
-## Color Scheme
-
-### Light Mode (Default)
-- Primary Background: `#F5F5DC` (Cream)
-- Secondary Background: `#FFF8E7` (Lighter Cream)
-- Primary Text: `#3E2723` (Dark Brown)
-- Accent: `#D4AF37` (Gold)
-
-### Dark Mode
-- Primary Background: `#1A1410` (Deep Brown)
-- Secondary Background: `#2A2118` (Lighter Brown)
-- Primary Text: `#E8DCC8` (Warm Cream)
-- Accent: `#E8C547` (Bright Gold)
-
-## API Integration
-
-This app uses [API.Bible](https://scripture.api.bible) for Bible text retrieval:
-- 573+ Bible translations available
-- Multiple languages supported
-- RESTful API with comprehensive documentation
-- Free tier available for personal use
-
-## Browser Support
-
-- Chrome/Edge (latest)
-- Firefox (latest)
-- Safari (latest)
-- Mobile browsers (iOS Safari, Chrome Mobile)
-
-## Privacy
-
-Faith Dive prioritizes your privacy:
-- ✅ All data stored locally in your browser
-- ✅ No user accounts required
-- ✅ No data sent to external servers (except Bible API requests)
-- ✅ No tracking or analytics
-- ✅ Works completely offline after first load
-
-## Roadmap
-
-- [ ] Favorites management
-- [ ] Reading plans
-- [ ] Daily verse notifications
-- [ ] Service worker for offline caching
-- [ ] Cross-reference lookup
-- [ ] Verse comparison between translations
-- [ ] Tags/categories for journal entries
-- [ ] Share verses as images
-
-## Contributing
-
-Contributions are welcome! Feel free to:
-- Report bugs
-- Suggest new features
-- Submit pull requests
+The service worker caches all static assets on install and uses a stale-while-revalidate strategy for subsequent requests. API requests (`/api/*`) are excluded from caching.
 
 ## License
 
-This project is open source and available under the [MIT License](LICENSE).
+[MIT](LICENSE)
 
-## Acknowledgments
-
-- Bible text provided by [API.Bible](https://scripture.api.bible)
-- Built with ❤️ for personal Bible study and spiritual growth
-- Developed with assistance from [Claude Code](https://claude.com/claude-code)
-
-## Support
-
-For questions or support, please open an issue on GitHub.
-
----
-
-**Faith Dive** - Dive deeper into God's Word 🙏
+Developed by Mike Maitoza with assistance from [Claude Code](https://claude.com/claude-code).
