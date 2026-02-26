@@ -4,7 +4,7 @@ import db from './database.js';
 import bibleSearch from './bibleSearch.js';
 import journal from './journal.js';
 import favorites from './favorites.js';
-import theme from './theme.js';
+
 
 // Register Service Worker
 if ('serviceWorker' in navigator) {
@@ -41,8 +41,6 @@ if ('serviceWorker' in navigator) {
 async function initApp() {
   try {
     await db.init();
-    theme.init();
-
     setupNavigation();
     setupOfflineDetection();
 
@@ -547,31 +545,11 @@ window.addToJournal = function(reference, verseText) {
 // Load more/settings page
 function loadMorePage() {
   const mainContent = document.getElementById('main-content');
-  const currentTheme = theme.getTheme();
   const journalCount = journal.getCount();
 
   mainContent.innerHTML = `
     <div class="card">
       <h2>Settings</h2>
-
-      <!-- Theme Toggle -->
-      <div class="settings-section">
-        <div class="settings-item">
-          <div class="settings-info">
-            <h3 class="settings-title">🌙 Dark Mode</h3>
-            <p class="settings-description">Toggle between light and dark theme</p>
-          </div>
-          <label class="theme-toggle">
-            <input
-              type="checkbox"
-              id="theme-checkbox"
-              ${currentTheme === 'dark' ? 'checked' : ''}
-              onchange="toggleTheme()"
-            />
-            <span class="theme-slider"></span>
-          </label>
-        </div>
-      </div>
 
       <!-- App Info -->
       <div class="settings-section">
@@ -678,11 +656,6 @@ window.deleteFavoriteEntry = function(id) {
       alert('❌ Failed to remove from favorites. Please try again.');
     }
   }
-};
-
-// Toggle theme
-window.toggleTheme = function() {
-  theme.toggle();
 };
 
 // Export data

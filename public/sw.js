@@ -14,7 +14,6 @@ const STATIC_ASSETS = [
   '/js/favorites.js',
   '/js/journal.js',
   '/js/bibleSearch.js',
-  '/js/theme.js',
   '/manifest.json',
   'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.js',
   'https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.8.0/sql-wasm.wasm'

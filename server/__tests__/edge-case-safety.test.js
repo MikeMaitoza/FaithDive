@@ -166,3 +166,40 @@ describe('Responsive design breakpoints', () => {
     expect(cssContent).toContain('.main-content');
   });
 });
+
+describe('Color scheme', () => {
+  const cssContent = fs.readFileSync(path.join(publicDir, 'css', 'style.css'), 'utf-8');
+
+  test('uses white background', () => {
+    expect(cssContent).toMatch(/--bg-primary:\s*#[Ff]{6}/);
+  });
+
+  test('uses teal accent color', () => {
+    expect(cssContent).toMatch(/--accent.*:\s*#26a69a/i);
+  });
+
+  test('has no dark mode CSS rules', () => {
+    expect(cssContent).not.toContain('body.dark-mode');
+  });
+
+  test('header uses gradient background', () => {
+    expect(cssContent).toMatch(/\.app-header[\s\S]*?gradient/);
+  });
+
+  test('bottom nav uses gradient background', () => {
+    expect(cssContent).toMatch(/\.bottom-nav[\s\S]*?gradient/);
+  });
+
+  test('app.js does not import theme.js', () => {
+    expect(appContent).not.toContain('./theme.js');
+  });
+
+  test('theme.js does not exist', () => {
+    const themeExists = fs.existsSync(path.join(publicDir, 'js', 'theme.js'));
+    expect(themeExists).toBe(false);
+  });
+
+  test('app.js does not contain toggleTheme', () => {
+    expect(appContent).not.toContain('toggleTheme');
+  });
+});
