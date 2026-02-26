@@ -28,3 +28,19 @@ describe('Production logging hygiene', () => {
     expect(errorStatements.length).toBeGreaterThan(0);
   });
 });
+
+describe('Production code hygiene', () => {
+  const publicDir = path.join(__dirname, '..', '..', 'public');
+
+  test('app.js uses requestAnimationFrame instead of setTimeout for DOM timing', () => {
+    const content = fs.readFileSync(path.join(publicDir, 'js', 'app.js'), 'utf-8');
+    const setTimeoutCalls = content.match(/setTimeout\s*\(/g) || [];
+    expect(setTimeoutCalls).toHaveLength(0);
+  });
+
+  test('app.js uses requestAnimationFrame for post-render callbacks', () => {
+    const content = fs.readFileSync(path.join(publicDir, 'js', 'app.js'), 'utf-8');
+    const rafCalls = content.match(/requestAnimationFrame\s*\(/g) || [];
+    expect(rafCalls.length).toBeGreaterThan(0);
+  });
+});

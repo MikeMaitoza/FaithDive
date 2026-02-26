@@ -400,7 +400,7 @@ function loadJournalPage() {
   `;
 
   // Set up event listeners for modal buttons (after DOM is updated)
-  setTimeout(() => {
+  requestAnimationFrame(() => {
     const closeBtn = document.getElementById('modal-close-btn');
     const cancelBtn = document.getElementById('modal-cancel-btn');
     const saveBtn = document.getElementById('modal-save-btn');
@@ -414,7 +414,7 @@ function loadJournalPage() {
     if (saveBtn) {
       saveBtn.addEventListener('click', saveJournalEntry);
     }
-  }, 50);
+  });
 }
 
 // Show journal entry modal
@@ -528,10 +528,10 @@ window.addToJournal = function(reference, verseText) {
   // Load journal page and open modal with pre-filled data
   loadJournalPage();
 
-  // Delay to ensure modal is fully rendered in DOM
-  setTimeout(() => {
+  // Wait for DOM to render before opening modal
+  requestAnimationFrame(() => {
     showJournalEntryModal(reference, verseText, '');
-  }, 200);
+  });
 };
 
 // Load more/settings page

@@ -99,3 +99,57 @@ describe('cleanVerseText handles long verses', () => {
     });
   });
 });
+
+describe('Event delegation and onclick handler safety', () => {
+  test('search results use event delegation, not inline onclick', () => {
+    // The search result buttons should NOT use onclick
+    // They use event delegation via resultsDiv.addEventListener
+    expect(appContent).toMatch(/resultsDiv\.addEventListener\(\s*['"]click['"]/);
+  });
+
+  test('all inline onclick handlers reference window-assigned functions', () => {
+    // Extract all onclick="functionName(...)" from template literals in app.js
+    const onclickMatches = appContent.match(/onclick="(\w+)\(/g) || [];
+    const calledFunctions = onclickMatches.map(m => m.match(/onclick="(\w+)\(/)[1]);
+
+    // Extract all window.functionName assignments
+    const windowAssignments = appContent.match(/window\.(\w+)\s*=/g) || [];
+    const windowFunctions = windowAssignments.map(m => m.match(/window\.(\w+)/)[1]);
+
+    calledFunctions.forEach(fn => {
+      expect(windowFunctions).toContain(fn);
+    });
+  });
+
+  test('all onchange handlers reference window-assigned functions', () => {
+    const onchangeMatches = appContent.match(/onchange="(\w+)\(/g) || [];
+    const calledFunctions = onchangeMatches.map(m => m.match(/onchange="(\w+)\(/)[1]);
+
+    const windowAssignments = appContent.match(/window\.(\w+)\s*=/g) || [];
+    const windowFunctions = windowAssignments.map(m => m.match(/window\.(\w+)/)[1]);
+
+    calledFunctions.forEach(fn => {
+      expect(windowFunctions).toContain(fn);
+    });
+  });
+});
+
+describe('Responsive design breakpoints', () => {
+  const cssContent = fs.readFileSync(path.join(publicDir, 'css', 'style.css'), 'utf-8');
+
+  test('has small phone breakpoint (max-width: 375px)', () => {
+    expect(cssContent).toMatch(/@media\s*\(\s*max-width:\s*375px\s*\)/);
+  });
+
+  test('has tablet/desktop breakpoint (min-width: 768px)', () => {
+    expect(cssContent).toMatch(/@media\s*\(\s*min-width:\s*768px\s*\)/);
+  });
+
+  test('small phone breakpoint styles search input group', () => {
+    expect(cssContent).toContain('.search-input-group');
+  });
+
+  test('tablet breakpoint constrains main-content width', () => {
+    expect(cssContent).toContain('.main-content');
+  });
+});

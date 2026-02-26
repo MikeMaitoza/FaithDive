@@ -87,3 +87,33 @@ describe('App module consistency', () => {
     expect(swExists).toBe(true);
   });
 });
+
+describe('Version consistency across all cache-busting params', () => {
+  const swVersionMatch = swContent.match(/CACHE_VERSION\s*=\s*'([^']+)'/);
+  const swVersion = swVersionMatch ? swVersionMatch[1] : null;
+
+  test('all ?v= params in index.html match CACHE_VERSION', () => {
+    expect(swVersion).not.toBeNull();
+    const versionParams = htmlContent.match(/\?v=([^"'\s]+)/g) || [];
+    expect(versionParams.length).toBeGreaterThan(0);
+
+    versionParams.forEach(param => {
+      const version = param.replace('?v=', '');
+      expect(version).toBe(swVersion);
+    });
+  });
+
+  test('index.html has cache-busting params on all local script tags', () => {
+    const localScripts = htmlContent.match(/src="\/js\/[^"]+"/g) || [];
+    localScripts.forEach(src => {
+      expect(src).toMatch(/\?v=/);
+    });
+  });
+
+  test('index.html has cache-busting params on all local stylesheet links', () => {
+    const localStyles = htmlContent.match(/href="\/css\/[^"]+"/g) || [];
+    localStyles.forEach(href => {
+      expect(href).toMatch(/\?v=/);
+    });
+  });
+});
