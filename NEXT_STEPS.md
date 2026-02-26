@@ -2,7 +2,7 @@
 
 **Last Updated:** 2026-02-26
 **Branch:** main
-**Tests:** 46 passing across 6 suites
+**Tests:** 69 passing across 7 suites
 
 ---
 
@@ -20,20 +20,21 @@
 - **Priority 3: Edge case safety tests** — `edge-case-safety.test.js` (19 tests). escapeAttr handles all 5 dangerous characters, all data attributes use escapeAttr, sw.js fetch handler uses pathname (not href) for API exclusion, cache-busting params on assets, offline banner and detection wiring, cleanVerseText pipeline integrity.
 - **Project setup** — Added CLAUDE.md (superpowers-driven workflow), rewrote README.md (lean personal project format), MIT license.
 
+### February 26, 2026 — Short-term Improvements
+- **setTimeout → requestAnimationFrame** — Replaced 2 `setTimeout` calls in `app.js` (50ms and 200ms) with `requestAnimationFrame` for proper post-render DOM timing. Guarded by test.
+- **Responsive CSS** — Added `max-width: 375px` breakpoint for small phones (iPhone SE/16e): stacked search inputs, verse action buttons, journal entry headers, full-width modal. Added `min-width: 768px` breakpoint for tablets: `max-width: 700px` centered container.
+- **Version consistency tests** — All `?v=` cache-busting params in `index.html` verified against `CACHE_VERSION` in `sw.js`. All local scripts and stylesheets verified to have cache-busting params.
+- **Event delegation verification** — All inline `onclick`/`onchange` handlers verified to reference `window`-assigned functions. Search results confirmed to use proper event delegation.
+
+### February 26, 2026 — Medium-term Improvements
+- **SW update notification** — Already fully wired (app.js detects `updatefound`/`statechange`, creates banner, CSS styles exist). Verified with 4 structural tests.
+- **database.js logging cleanup** — Removed 6 `console.log` statements. Kept `console.error` and `console.warn`. Extended `no-debug-logging.test.js` to cover database.js.
+- **Graceful offline degradation** — Both `searchByReference` and `searchByKeyword` now check `navigator.onLine` before API calls. Shows friendly message: "Bible search requires an internet connection. Your journal and favorites are still available offline."
+- **Data persistence edge cases** — `importData` now rejects files with no recognizable keys (journals/favorites/settings). `save()` wraps `localStorage.setItem` in try/catch with `QuotaExceededError` handling. New `data-persistence.test.js` (3 tests).
+
 ---
 
 ## Up Next
-
-### Short-term
-- [ ] Replace `setTimeout(50ms)` in `loadJournalPage` with `requestAnimationFrame()`
-- [ ] Automate version management (single source of truth for cache version)
-- [ ] Complete responsive design gaps
-- [ ] Verify event delegation works correctly across all pages
-
-### Medium-term
-- [ ] Service worker update notifications (banner already exists in code, needs wiring)
-- [ ] Full offline mode (currently partial — cached assets work, but no offline data sync)
-- [ ] Data persistence edge cases (import/export with corrupted files, large datasets)
 
 ### Long-term
 - [ ] Consider IndexedDB migration for larger datasets

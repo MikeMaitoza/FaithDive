@@ -187,6 +187,11 @@ async function searchByReference() {
     return;
   }
 
+  if (!navigator.onLine) {
+    resultsDiv.innerHTML = '<p class="error-message">Bible search requires an internet connection. Your journal and favorites are still available offline.</p>';
+    return;
+  }
+
   resultsDiv.innerHTML = '<p class="loading" role="status" aria-live="polite"><span class="loading-spinner" aria-hidden="true"></span>Searching...</p>';
 
   try {
@@ -227,6 +232,11 @@ async function searchByKeyword() {
 
   if (!query) {
     resultsDiv.innerHTML = '<p class="error-message">Please enter a search term</p>';
+    return;
+  }
+
+  if (!navigator.onLine) {
+    resultsDiv.innerHTML = '<p class="error-message">Bible search requires an internet connection. Your journal and favorites are still available offline.</p>';
     return;
   }
 

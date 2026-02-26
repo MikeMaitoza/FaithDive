@@ -117,3 +117,23 @@ describe('Version consistency across all cache-busting params', () => {
     });
   });
 });
+
+describe('Service worker update notification', () => {
+  const cssContent = fs.readFileSync(path.join(publicDir, 'css', 'style.css'), 'utf-8');
+
+  test('app.js listens for updatefound on registration', () => {
+    expect(appContent).toMatch(/addEventListener\(\s*['"]updatefound['"]/);
+  });
+
+  test('app.js listens for statechange on installing worker', () => {
+    expect(appContent).toMatch(/addEventListener\(\s*['"]statechange['"]/);
+  });
+
+  test('app.js creates update-banner element', () => {
+    expect(appContent).toContain('update-banner');
+  });
+
+  test('style.css has update-banner styles', () => {
+    expect(cssContent).toContain('.update-banner');
+  });
+});

@@ -25,24 +25,20 @@ class Database {
         // Load existing database
         const uint8Array = new Uint8Array(JSON.parse(savedDb));
         this.db = new SQL.Database(uint8Array);
-        console.log('📚 Loaded existing database');
 
         // Migrate favorites table if needed (add verse_text column for existing users)
         const tableInfo = this.db.exec("PRAGMA table_info(favorites)");
         if (tableInfo.length > 0) {
           const columns = tableInfo[0].values.map(row => row[1]);
           if (!columns.includes('verse_text')) {
-            console.log('📚 Migrating favorites table to add verse_text column...');
-            this.db.run("ALTER TABLE favorites ADD COLUMN verse_text TEXT DEFAULT ''");
+              this.db.run("ALTER TABLE favorites ADD COLUMN verse_text TEXT DEFAULT ''");
             this.save();
-            console.log('✅ Migration complete');
           }
         }
       } else {
         // Create new database
         this.db = new SQL.Database();
         this.createTables();
-        console.log('📚 Created new database');
       }
 
       this.initialized = true;
@@ -105,8 +101,15 @@ class Database {
   save() {
     const data = this.db.export();
     const buffer = Array.from(data);
-    localStorage.setItem('faithdive_db', JSON.stringify(buffer));
-    console.log('💾 Database saved to localStorage');
+    try {
+      localStorage.setItem('faithdive_db', JSON.stringify(buffer));
+    } catch (error) {
+      if (error.name === 'QuotaExceededError' || error.code === 22) {
+        console.error('Storage quota exceeded. Your data may not be saved.');
+        throw new Error('Storage quota exceeded. Try exporting and clearing old data.');
+      }
+      throw error;
+    }
   }
 
   /**
@@ -129,7 +132,6 @@ class Database {
    */
   all(sql, params = []) {
     const results = this.db.exec(sql, params);
-    console.log('📖 Database query:', sql, 'Results:', results.length > 0 ? results[0].values.length : 0);
     if (results.length === 0) return [];
 
     const columns = results[0].columns;
@@ -174,6 +176,11 @@ class Database {
   importData(data, replace = false) {
     const errors = [];
     const warnings = [];
+
+    if (!data.journals && !data.favorites && !data.settings) {
+      errors.push('No recognizable data found. File must contain journals, favorites, or settings.');
+      return { success: false, errors, warnings };
+    }
 
     if (replace) {
       // Clear existing data

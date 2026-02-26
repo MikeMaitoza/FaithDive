@@ -27,6 +27,18 @@ describe('Production logging hygiene', () => {
     const errorStatements = content.match(/console\.error\(/g) || [];
     expect(errorStatements.length).toBeGreaterThan(0);
   });
+
+  test('database.js contains no console.log statements', () => {
+    const content = fs.readFileSync(path.join(publicDir, 'js', 'database.js'), 'utf-8');
+    const logStatements = content.match(/console\.log\(/g) || [];
+    expect(logStatements).toHaveLength(0);
+  });
+
+  test('database.js retains console.error for real failures', () => {
+    const content = fs.readFileSync(path.join(publicDir, 'js', 'database.js'), 'utf-8');
+    const errorStatements = content.match(/console\.error\(/g) || [];
+    expect(errorStatements.length).toBeGreaterThan(0);
+  });
 });
 
 describe('Production code hygiene', () => {

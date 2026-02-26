@@ -77,6 +77,19 @@ describe('Offline fallback', () => {
   test('app.js checks navigator.onLine for initial state', () => {
     expect(appContent).toContain('navigator.onLine');
   });
+
+  test('searchByReference checks online status before API call', () => {
+    // Extract the searchByReference function body
+    const fnMatch = appContent.match(/async function searchByReference\(\)[\s\S]*?^}/m);
+    expect(fnMatch).not.toBeNull();
+    expect(fnMatch[0]).toContain('navigator.onLine');
+  });
+
+  test('searchByKeyword checks online status before API call', () => {
+    const fnMatch = appContent.match(/async function searchByKeyword\(\)[\s\S]*?^}/m);
+    expect(fnMatch).not.toBeNull();
+    expect(fnMatch[0]).toContain('navigator.onLine');
+  });
 });
 
 describe('cleanVerseText handles long verses', () => {
